@@ -226,14 +226,10 @@ footer b{display:block;font:700 16px var(--disp);color:var(--em);letter-spacing:
 
 <nav class="bnav" id="bNav" aria-label="Main navigation"></nav>
 
+<script src="./config.js"></script>
 <script>
-/* ============ CONFIG (edit after deploying your Cloudflare Worker) ============ */
-const CONFIG = {
-  // Example: "https://mykatha-portal.YOURNAME.workers.dev". Leave "" for development preview.
-  API_BASE: "",
-  // Query-string parameter that carries the personal access token.
-  TOKEN_PARAM: "t"
-};
+/* ============ CONFIG ============ */
+const CONFIG = window.MY_KATHA_PORTAL_CONFIG || { API_BASE: "", TOKEN_PARAM: "t" };
 
 /* ============ API layer: the only code that talks to the backend ============
  Expected: GET {API_BASE}/portal  with header  Authorization: Bearer <token>

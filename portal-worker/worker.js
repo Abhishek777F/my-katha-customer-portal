@@ -1,5 +1,5 @@
 const PROJECT_ID = "katha-777";
-const FIREBASE_API_KEY = "AIzaSyCMG_BroLBZ0GbYmBKge7e4vAn77aLe0PA";
+const FIREBASE_API_KEY = "AIzaSyCMG_broLBZ0GbYmBKge7e4vAn77aLe0PA";
 const ALLOWED_ORIGIN = "https://abhishek777f.github.io";
 const PORTAL_URL = "https://abhishek777f.github.io/my-katha-customer-portal/";
 

@@ -110,8 +110,14 @@ async function handle(req,env){
   if(req.method==="OPTIONS")return new Response(null,{status:204,headers:cors(origin)});
   const path=new URL(req.url).pathname;
   try{
-    // Health is intentionally public so it can be opened directly in a browser.
+    // Public health checks expose service status only, never customer data.
     if(req.method==="GET"&&path.endsWith("/health"))return reply({service:"My Katha Customer Portal API",project:PROJECT_ID,status:"ready"},200,origin);
+    // Verify the configured service account and its Firestore read access without returning records.
+    if(req.method==="GET"&&path.endsWith("/health/firebase")){
+      const access=await googleToken(env);
+      await fs(root()+":runQuery",access,{method:"POST",body:JSON.stringify({structuredQuery:{from:[{collectionId:"customers"}],limit:1}})});
+      return reply({firebase:"connected",firestore:"readable",project:PROJECT_ID},200,origin);
+    }
     // All customer and admin API routes remain restricted to the GitHub Pages origin.
     if(origin!==ALLOWED_ORIGIN)return reply({error:"Origin not allowed."},403,origin);
     if(req.method==="GET"&&path.endsWith("/portal")){

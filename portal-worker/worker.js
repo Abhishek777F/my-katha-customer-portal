@@ -28,7 +28,14 @@ function pemBytes(pem) {
 }
 async function googleToken(env) {
   if (!env.FIREBASE_SERVICE_ACCOUNT) throw new Error("Cloudflare secret FIREBASE_SERVICE_ACCOUNT is missing.");
-  const sa = JSON.parse(env.FIREBASE_SERVICE_ACCOUNT), now = Math.floor(Date.now()/1000);
+  let sa;
+  try { sa = JSON.parse(env.FIREBASE_SERVICE_ACCOUNT); }
+  catch (_) { throw new Error("FIREBASE_SERVICE_ACCOUNT must contain the complete Firebase service-account JSON file."); }
+  if (!sa || typeof sa.client_email !== "string" || !sa.client_email.includes("@") ||
+      typeof sa.private_key !== "string" || !sa.private_key.includes("BEGIN PRIVATE KEY")) {
+    throw new Error("FIREBASE_SERVICE_ACCOUNT is missing client_email or private_key. Paste the complete service-account JSON contents into the Cloudflare Secret value.");
+  }
+  const now = Math.floor(Date.now()/1000);
   const head = b64url(JSON.stringify({alg:"RS256",typ:"JWT"}));
   const claim = b64url(JSON.stringify({iss:sa.client_email,scope:"https://www.googleapis.com/auth/datastore",aud:"https://oauth2.googleapis.com/token",iat:now,exp:now+3600}));
   const unsigned = head+"."+claim;

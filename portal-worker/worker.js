@@ -108,10 +108,12 @@ async function portal(token,access){
 async function handle(req,env){
   const origin=req.headers.get("Origin")||"";
   if(req.method==="OPTIONS")return new Response(null,{status:204,headers:cors(origin)});
-  if(origin!==ALLOWED_ORIGIN)return reply({error:"Origin not allowed."},403,origin);
   const path=new URL(req.url).pathname;
   try{
+    // Health is intentionally public so it can be opened directly in a browser.
     if(req.method==="GET"&&path.endsWith("/health"))return reply({service:"My Katha Customer Portal API",project:PROJECT_ID,status:"ready"},200,origin);
+    // All customer and admin API routes remain restricted to the GitHub Pages origin.
+    if(origin!==ALLOWED_ORIGIN)return reply({error:"Origin not allowed."},403,origin);
     if(req.method==="GET"&&path.endsWith("/portal")){
       const token=bearer(req);if(token.length<30)return reply({error:"Personal link token required."},401,origin);
       const result=await portal(token,await googleToken(env));return reply(result.data,result.status,origin);
